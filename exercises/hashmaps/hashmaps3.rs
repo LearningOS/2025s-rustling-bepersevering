@@ -1,4 +1,4 @@
-// hashmaps3.rs
+
 //
 // A list of scores (one per line) of a soccer match is given. Each line is of
 // the form : "<team_1_name>,<team_2_name>,<team_1_goals>,<team_2_goals>"
@@ -13,8 +13,6 @@
 //
 // Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
 // hint.
-
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
@@ -39,6 +37,25 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+        scores.entry(team_1_name)
+        .and_modify(|team| {
+            team.goals_scored += team_1_score;
+            team.goals_conceded += team_2_score;
+        })
+        .or_insert(Team {
+            goals_scored: team_1_score,
+            goals_conceded: team_2_score
+        });
+
+        scores.entry(team_2_name)
+        .and_modify(|team| {
+            team.goals_scored += team_2_score;
+            team.goals_conceded += team_1_score;
+        })
+        .or_insert(Team {
+            goals_scored: team_2_score,
+            goals_conceded: team_1_score
+        });
     }
     scores
 }
