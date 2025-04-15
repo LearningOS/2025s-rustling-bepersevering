@@ -10,6 +10,7 @@
 // hint.
 
 use std::num::ParseIntError;
+use std::ptr::null;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
@@ -31,8 +32,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
-
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
 // 2. Split the given string on the commas present in it
@@ -52,6 +51,26 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.is_empty() {
+            return Err(ParsePersonError::Empty);
+        }
+
+        let part: Vec<&str> = s.split(",").collect();
+
+        if part.len() != 2 {
+            return Err(ParsePersonError::BadLen);
+        }
+
+        let name = part[0].trim();
+        if name.is_empty() {
+            return Err(ParsePersonError::NoName);
+        }
+
+        part[1].trim().parse::<usize>()
+            .map(|age| Person {
+                name: name.to_string(),
+                age,
+            }).map_err(|e| ParsePersonError::ParseInt(e))
     }
 }
 
